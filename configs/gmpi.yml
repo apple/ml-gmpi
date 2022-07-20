@@ -1,0 +1,171 @@
+SEED: 123
+
+# logging settings
+LOG_DIR: "./experiments/"
+LOG_FILE: "train.log"
+INFO_DIR: "infos"
+CHECKPOINT_FOLDER: "checkpoints"
+TENSORBOARD_DIR: "tb"
+
+DEBUG: 0
+
+GMPI:
+
+  TRAIN:
+
+    # ["FFHQ256", "FFHQ512", "FFHQ1024", "AFHQCat", "MetFaces"]
+    dataset: "FFHQ256"
+    
+    n_epochs: 3000
+    sample_interval: 200
+    output_dir: "debug"
+    load_dir: ""
+    eval_freq: 5000
+    port: 12345
+    model_save_interval: 500
+
+    n_dataloader_workers: 8
+
+    aug_with_lighting: True
+    aug_with_lighting_max_ka: 0.9
+    aug_with_lighting_max_kd: 0.1
+    aug_with_lighting_start_iter: 1000
+    aug_with_lighting_grow_n_iters: 1000
+
+    use_xyz_ztype: "depth"  # ["depth", "disparity", "random"]
+    use_normalized_xyz: True
+    normalized_xyz_range: "01"  # ["01", "-11"]
+
+    D_from_stylegan2: True
+
+    D_cond_on_pose: True
+    D_cond_pose_dim: 16
+
+    D_pred_pos: False
+
+    n_view_per_z_in_train: 4
+
+    G_select_worse_view: "per_z"   # ["none", "per_z"]
+
+    use_edge_aware_loss: False
+    edge_aware_loss_w: 1.0
+    edge_aware_loss_start_iter: 1000
+    edge_aware_loss_grow_n_iters: 1000
+    edge_aware_loss_e_min: 0.05
+    edge_aware_loss_g_min: 0.01
+
+    use_cano_reconstruct_loss: False
+    cano_reconstruct_loss_w: 0.0
+
+    only_tune: False
+    D_train: True
+    G_tune_alpha: True
+    G_tune_background: False
+    G_tune_mapping: False
+
+    G_iters: 1
+
+  DDP_TRAIN:
+    addr: "127.0.1.1"
+    port: 8338
+  
+  MPI:
+    align_corners: True
+
+    use_confined_volume: True
+  
+    n_gen_planes: 32
+
+    aug_jitter_to_pixels: False
+    aug_jitter_to_planes: False
+
+    separate_background: False
+
+    cam_ray_from_pix_center: True
+
+    depth2alpha_n_z_bins: 256
+
+    distance_sample_method: "inverse"   # ["uniform", "log-uniform", "inverse"]
+
+    FOR_FFHQ:
+      spatial_enlarge_factor: 1.001
+      cam_pose_sample_method: "truncated_gaussian"  # ["uniform", "truncated_gaussian"]
+      cam_pose_n_truncated_stds: 2
+      cam_sphere_center_z: 1.0
+      cam_sphere_r: 1.0
+
+    FOR_AFHQCat:
+      spatial_enlarge_factor: 1.001
+      cam_pose_sample_method: "truncated_gaussian"  # ["uniform", "truncated_gaussian"]
+      cam_pose_n_truncated_stds: 3
+      cam_sphere_center_z: 2.7
+      cam_sphere_r: 2.7
+    
+    FOR_MetFaces:
+      spatial_enlarge_factor: 1.001
+      cam_pose_sample_method: "truncated_gaussian"  # ["uniform", "truncated_gaussian"]
+      cam_pose_n_truncated_stds: 2
+      cam_sphere_center_z: 1.0
+      cam_sphere_r: 1.0
+  
+  MODEL:
+
+    use_pretrained_ckpt: True
+
+    pretrained_ckpts: {
+      "FFHQ256": "ckpts/stylegan2_pretrained/transfer-learning-source-nets/ffhq-res256-mirror-paper256-noaug.pkl",
+      "FFHQ512": "ckpts/stylegan2_pretrained/transfer-learning-source-nets/ffhq-res512-mirror-stylegan2-noaug.pkl",
+      "FFHQ1024": "ckpts/stylegan2_pretrained/transfer-learning-source-nets/ffhq-res1024-mirror-stylegan2-noaug.pkl",
+      "AFHQCat": "ckpts/stylegan2_pretrained/afhqcat.pkl",
+      "MetFaces": "ckpts/stylegan2_pretrained/metfaces.pkl",
+    }
+  
+    STYLEGAN2:
+
+      G_final_img_act: "tanh"  # ["none", "sigmoid", "tanh"]
+
+      truncation_psi: 1.0
+
+      # choices:
+      # ["none", "add_z", "normalize_add_z", "add_xyz", "normalize_add_xyz", "depth2alpha"]
+      torgba_cond_on_pos_enc: "normalize_add_z"
+      # choices: ["learnable_param", "mlp", "conv", "modulated"], act: ["linear", "lrelu", "tanh"]
+      torgba_cond_on_pos_enc_embed_func: "modulated_lrelu"  # recommended choices: ["modulated_lrelu", "learnable_param"]
+      pos_enc_multires: 0
+
+      torgba_sep_background: True
+      build_background_from_rgb: True
+      build_background_from_rgb_ratio: 0.05
+
+      cond_on_pos_enc_only_alpha: True
+
+      gen_alpha_largest_res: 256
+
+      background_alpha_full: True
+
+      mapping_kwargs:
+        num_layers: 8
+
+      synthesis_kwargs:
+        # NOTE: it needs adpation https://github.com/NVlabs/stylegan2-ada-pytorch/blob/6f160b3d22b8b178ebe533a50d4d5e63aedba21d/train.py#L178
+        channel_base: 32768
+        channel_max: 512
+      
+      discriminator:
+        use_ori_mapping: False
+        cmap_dim: 16 # null
+        use_mbstd_in_D: True
+
+DATASET:
+  
+  FFHQ:
+    TRAIN_DATAROOT: "runtime_dataset/ffhq{}x{}.zip"
+    POSE_DATAROOT: "runtime_dataset/ffhq{}_deep3dface_coeffs"
+  
+  AFHQCat:
+    TRAIN_DATAROOT: "runtime_dataset/afhq_v2_train_cat_512"
+    POSE_DATAROOT: "runtime_dataset/afhq_v2_train_cat_512"
+  
+  MetFaces:
+    TRAIN_DATAROOT: "runtime_dataset/metfaces1024x1024_xflip"
+    POSE_DATAROOT: "runtime_dataset/metfaces_xflip_deep3dface_coeffs"
