@@ -10,7 +10,7 @@
 **Generative Multiplane Images: Making a 2D GAN 3D-Aware, ECCV 2022 (Oral).**<br>
 [Xiaoming Zhao](https://xiaoming-zhao.com/), [Fangchang Ma](https://fangchangma.github.io/), [David Güera Cobo](https://scholar.google.com/citations?user=bckYvFkAAAAJ&hl=en), [Zhile Ren](https://jrenzhile.com/), [Alexander G. Schwing](https://www.alexander-schwing.de/), and [Alex Colburn](https://www.colburn.org/). 
 
-<!-- ### [Project Page](https://apple.github.io/ml-gmpi/) | [Paper](https://arxiv.org) | [Code](https://apple.github.io/ml-gmpi/) -->
+### [Project Page](https://xiaoming-zhao.github.io/projects/gmpi/) | Paper (coming soon)
 
 ## Table of Contents
 
@@ -135,7 +135,7 @@ Please refer to [TRAIN_EVAL.md](./docs/TRAIN_EVAL.md) for more details.
 ```
 @inproceedings{zhao-gmpi2022,
   title = {Generative Multiplane Images: Making a 2D GAN 3D-Aware},
-  author = {Xiaoming Zhao and Fangchang Ma and David Güera and Zhile Ren and Alexander G. Schwing and and Alex Colburn},
+  author = {Xiaoming Zhao and Fangchang Ma and David Güera and Zhile Ren and Alexander G. Schwing and Alex Colburn},
   booktitle = {Proc. ECCV},
   year = {2022},
 }
