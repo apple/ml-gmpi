@@ -10,7 +10,7 @@
 **Generative Multiplane Images: Making a 2D GAN 3D-Aware, ECCV 2022 (Oral).**<br>
 [Xiaoming Zhao](https://xiaoming-zhao.com/), [Fangchang Ma](https://fangchangma.github.io/), [David Güera Cobo](https://scholar.google.com/citations?user=bckYvFkAAAAJ&hl=en), [Zhile Ren](https://jrenzhile.com/), [Alexander G. Schwing](https://www.alexander-schwing.de/), and [Alex Colburn](https://www.colburn.org/). 
 
-### [Project Page](https://xiaoming-zhao.github.io/projects/gmpi/) | Paper (coming soon)
+### [Project Page](https://xiaoming-zhao.github.io/projects/gmpi/) | [Paper](https://arxiv.org/abs/2207.10642)
 
 ## Table of Contents
 
@@ -24,6 +24,9 @@
 - [License](#license)
 
 ## Environment Setup
+
+This code has been tested on Ubuntu 18.04 with CUDA 10.2.
+
 ```
 conda env create -f environment.yml
 ```
