@@ -1234,7 +1234,7 @@ class Generator(torch.nn.Module):
         gen_alpha_largest_res = 256,
         G_final_img_act = "none",
         depth2alpha_z_range=1.0,
-        depth2alpha_n_z_bins=10, 
+        depth2alpha_n_z_bins=None, 
     ):
         super().__init__()
 

@@ -22,32 +22,38 @@ def setup_model(opt, config, metadata, mpi_xyz_input, mpi_xyz_only_z, vis_mesh=F
     n_g_out_channels = 4
     n_g_out_planes = opt.nplanes
 
-    if "depth2alpha_n_z_bins" in config.GMPI.MPI and config.GMPI.MPI.depth2alpha_n_z_bins is not None:
-        from gmpi.models.networks.networks_vanilla_depth2alpha import Generator as StyleGAN2Generator
-
-        if config.GMPI.TRAIN.normalized_xyz_range == "01":
-            depth2alpha_z_range = 1.0
-        elif config.GMPI.TRAIN.normalized_xyz_range == "-11":
-            depth2alpha_z_range = 2.0
-        else:
-            raise ValueError
-    else:
+    if config.GMPI.TRAIN.normalized_xyz_range == "01":
         depth2alpha_z_range = 1.0
+    elif config.GMPI.TRAIN.normalized_xyz_range == "-11":
+        depth2alpha_z_range = 2.0
+    else:
+        raise ValueError
 
-        if "depth2alpha_n_z_bins" not in config.GMPI.MPI:
-            config.defrost()
-            config.GMPI.MPI.depth2alpha_n_z_bins = None
-            config.freeze()
+    if "depth2alpha_n_z_bins" not in config.GMPI.MPI:
+        config.defrost()
+        config.GMPI.MPI.depth2alpha_n_z_bins = None
+        config.freeze()
 
-        if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc != "none":
+    if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc != "none":
+        if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc == "depth2alpha":
+            print("\nGenerator comes from depth2alpha\n")
+            from gmpi.models.networks.networks_vanilla_depth2alpha import Generator as StyleGAN2Generator
+        elif config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc == "normalize_add_z":
             if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc_embed_func in ["learnable_param"]:
+                print("\nGenerator comes from learnable_param\n")
+                n_g_out_planes = config.GMPI.MPI.n_gen_planes
                 from gmpi.models.networks.networks_pos_enc_learnable_param import Generator as StyleGAN2Generator
-
-                n_g_out_planes = n_g_out_planes = config.GMPI.MPI.n_gen_planes
-            else:
+            elif config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc_embed_func in ["modulated_lrelu"]:
+                print("\nGenerator comes from cond_on_depth\n")
                 from gmpi.models.networks.networks_cond_on_pos_enc import Generator as StyleGAN2Generator
+            else:
+                raise NotImplementedError
         else:
-            from gmpi.models.networks.networks_vanilla import Generator as StyleGAN2Generator
+            raise NotImplementedError
+    else:
+        print("\nGenerator comes from vanilla\n")
+        n_g_out_planes = config.GMPI.MPI.n_gen_planes
+        from gmpi.models.networks.networks_vanilla import Generator as StyleGAN2Generator
 
     synthesis_kwargs = convert_cfg_to_dict(config.GMPI.MODEL.STYLEGAN2.synthesis_kwargs)
     synthesis_kwargs_D = convert_cfg_to_dict(config.GMPI.MODEL.STYLEGAN2.synthesis_kwargs)

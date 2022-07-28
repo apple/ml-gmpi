@@ -86,12 +86,21 @@ def train(rank, world_size, config, master_port, run_dataset):
         # fmt: off
         if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc != "none":
             if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc == "depth2alpha":
+                print("\nGenerator comes from depth2alpha\n")
                 from gmpi.models.networks.networks_vanilla_depth2alpha import Generator as StyleGAN2Generator
-            elif config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc_embed_func in ["learnable_param"]:
-                from gmpi.models.networks.networks_pos_enc_learnable_param import Generator as StyleGAN2Generator
+            elif config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc == "normalize_add_z":
+                if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc_embed_func in ["learnable_param"]:
+                    print("\nGenerator comes from learnable_param\n")
+                    from gmpi.models.networks.networks_pos_enc_learnable_param import Generator as StyleGAN2Generator
+                elif config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc_embed_func in ["modulated_lrelu"]:
+                    print("\nGenerator comes from cond_on_depth\n")
+                    from gmpi.models.networks.networks_cond_on_pos_enc import Generator as StyleGAN2Generator
+                else:
+                    raise NotImplementedError
             else:
-                from gmpi.models.networks.networks_cond_on_pos_enc import Generator as StyleGAN2Generator
+                raise NotImplementedError
         else:
+            print("\nGenerator comes from vanilla\n")
             from gmpi.models.networks.networks_vanilla import Generator as StyleGAN2Generator
         # fmt: on
 

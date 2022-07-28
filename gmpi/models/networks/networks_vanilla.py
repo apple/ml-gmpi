@@ -604,7 +604,7 @@ class Generator(torch.nn.Module):
         self.conv_clamp = synthesis_kwargs["conv_clamp"]
 
     def forward(self, z, c, mpi_xyz_coords, xyz_coords_only_z, n_planes, truncation_psi=1, truncation_cutoff=None,
-                enable_mapping_grad=True, enable_syn_feat_net_grad=True,  **synthesis_kwargs):
+                enable_mapping_grad=True, enable_syn_feat_net_grad=True, z_interpolation_ws=None, **synthesis_kwargs):
 
         ws = self.mapping(z, c, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff)
         img = self.synthesis(ws, **synthesis_kwargs)

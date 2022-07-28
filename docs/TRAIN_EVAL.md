@@ -125,11 +125,11 @@ If everyting goes well, you should observe the following folder structure:
 ```
 .
 +-- ckpts
-|  +-- afhqcat.pkl                         # file
-|  +-- metfaces.pkl                        # file
 |  +-- stylegan2_pretrained                # folder
+|  |  +-- afhqcat.pkl                      # file
+|  |  +-- metfaces.pkl                     # file
 |  |  +-- transfer-learning-source-nets    # folder
-+-- dataset
++-- runtime_dataset
 |  +-- ffhq256x256.zip                     # file
 |  +-- ffhq256_deep3dface_coeffs           # folder
 |  +-- ffhq512x512.zip                     # file
@@ -179,7 +179,7 @@ The command to evaluate the trained model is in [eval.sh](../gmpi/eval/eval.sh).
 
 Run the following command to evalute the model:
 ```bash
-bash ${GMPI_ROOT}/eval/eval.sh \
+bash ${GMPI_ROOT}/gmpi/eval/eval.sh \
   ${GMPI_ROOT} \
   FFHQ512 \     # this can be FFHQ256, FFHQ512, FFHQ1024, AFHQCat, or MetFaces
   exp_id \      # this is your experiment ID

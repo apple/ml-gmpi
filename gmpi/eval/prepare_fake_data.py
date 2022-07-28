@@ -106,9 +106,15 @@ def main(opt):
         # NOTE: Deep3DFaceRecon can only provide mask and depth of 224x224
         # https://github.com/sicxu/Deep3DFaceRecon_pytorch
         metadata["img_size"] = 224
+    
+    if config.GMPI.MODEL.STYLEGAN2.torgba_cond_on_pos_enc == "none":
+        # Vanilla version. The number of planes must be same in training and evaluation.
+        n_mpi_planes = config.GMPI.MPI.n_gen_planes
+    else:
+        n_mpi_planes = opt.nplanes
 
     mpi_renderer = MPIRenderer(
-        n_mpi_planes=opt.nplanes,  # config.GMPI.MPI.n_gen_planes,
+        n_mpi_planes=n_mpi_planes,  # config.GMPI.MPI.n_gen_planes,
         plane_min_d=metadata["ray_start"],
         plane_max_d=metadata["ray_end"],
         plan_spatial_enlarge_factor=config.GMPI.MPI.CAM_SETUP.spatial_enlarge_factor,
