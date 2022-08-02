@@ -33,7 +33,11 @@ conda env create -f deepface_env.yaml   # deepface
 
 ### Deep3DFaceRecon_pytorch
 
-We made small modifications to the [original repo](https://github.com/sicxu/Deep3DFaceRecon_pytorch/tree/6ba3d22f84bf508f0dde002da8fff277196fef21). Please use [our modified version](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch) and follow [the official instruction](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch#requirements) to setup the virtual environments and to download the pretrained models. Assume the code repo locates at `Deep3DFaceRecon_PATH`:
+**Note: we made small modifications to the original repo. Please use [our modified version](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch).** Please follow [the official instruction](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch#requirements) to setup the virtual environments and to download the pretrained models. There are two major steps:
+1. Install some packages and setup the environment: see [this link](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch#installation);
+2. Download some data: see [this link](https://github.com/Xiaoming-Zhao/Deep3DFaceRecon_pytorch#prepare-prerequisite-models).
+
+Assume the code repo locates at `Deep3DFaceRecon_PATH`:
 ```bash
 export Deep3DFaceRecon_PATH=/path/to/Deep3DFaceRecon_pytorch
 ```
