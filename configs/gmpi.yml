@@ -16,6 +16,7 @@ GMPI:
     # ["FFHQ256", "FFHQ512", "FFHQ1024", "AFHQCat", "MetFaces"]
     dataset: "FFHQ256"
     
+    total_iters: 5001
     n_epochs: 3000
     sample_interval: 200
     output_dir: "debug"

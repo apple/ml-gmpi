@@ -354,13 +354,13 @@ def train(rank, world_size, config, master_port, run_dataset):
 
     torch.manual_seed(rank)
     dataloader = None
-    total_progress_bar = tqdm(total=opt.n_epochs, desc="Total progress", dynamic_ncols=True)
-    total_progress_bar.update(discriminator.epoch)
-    interior_step_bar = tqdm(dynamic_ncols=True)
+    total_progress_bar = tqdm(total=opt.total_iters, desc="Total progress", dynamic_ncols=True)
+    total_progress_bar.update(discriminator.step)
 
     for epoch_i in range(opt.n_epochs):
 
-        total_progress_bar.update(1)
+        if discriminator.step > opt.total_iters:
+            break
 
         metadata = curriculums.extract_metadata(curriculum, discriminator.step)
 
@@ -402,19 +402,18 @@ def train(rank, world_size, config, master_port, run_dataset):
             step_next_upsample = curriculums.next_upsample_step(curriculum, discriminator.step)
             step_last_upsample = curriculums.last_upsample_step(curriculum, discriminator.step)
 
-            interior_step_bar.reset(total=(step_next_upsample - step_last_upsample))
-            interior_step_bar.set_description(f"Progress to next stage")
-            interior_step_bar.update((discriminator.step - step_last_upsample))
-
-            if rank == 0:
-                logger.info(f"\nstep_next_upsample: {step_next_upsample}, {step_next_upsample}\n")
-
         logger.info(f"New epoch {epoch_i}.\n\n")
 
         # NOTE: this is requred to make distributed sampler shuffle dataset.
         data_sampler.set_epoch(epoch_i)
 
         for batch_i, batch_data in enumerate(dataloader):
+
+            if discriminator.step > opt.total_iters:
+                break
+            
+            if rank == 0:
+                total_progress_bar.update(1)
 
             # pred_yaws_real/pred_pitches_real: [B, 1]
             imgs, flat_w2c_mats_real, _, pred_yaws_real, pred_pitches_real = batch_data
@@ -786,11 +785,10 @@ def train(rank, world_size, config, master_port, run_dataset):
                 ema2.update(generator_ddp.parameters())
 
             if rank == 0:
-                interior_step_bar.update(1)
                 if discriminator.step % 10 == 0:
                     tqdm.write(
                         f"[Experiment: {opt.output_dir}] "
-                        f"[Epoch: {discriminator.epoch}/{opt.n_epochs}] "
+                        # f"[Epoch: {discriminator.epoch}/{opt.n_epochs}] "
                         f"[D loss: {d_loss.item()}] [G loss: {g_loss.item()}] "
                         f"[Step: {discriminator.step}] "
                         f"[Img Size: {metadata['img_size']}] [Batch Size: {metadata['batch_size']}] "
@@ -1008,7 +1006,7 @@ def train(rank, world_size, config, master_port, run_dataset):
 
             # fmt: on
 
-            if opt.eval_freq > 0 and (discriminator.step + 1) % opt.eval_freq == 0:
+            if (opt.eval_freq > 0) and (discriminator.step > 0) and (discriminator.step % opt.eval_freq == 0):
                 generated_dir = os.path.join("./evaluation/generated")
 
                 if rank == 0:
