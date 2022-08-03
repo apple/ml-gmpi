@@ -181,7 +181,7 @@ The command to evaluate the trained model is in [eval.sh](../gmpi/eval/eval.sh).
 - Depth metrics,
 - Pose accuracy metrics.
 
-Run the following command to evalute the model:
+In the paper, all results come from checkpoints at 5000 iterations. Run the following command to evalute the model:
 ```bash
 bash ${GMPI_ROOT}/gmpi/eval/eval.sh \
   ${GMPI_ROOT} \
