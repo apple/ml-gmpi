@@ -6,6 +6,7 @@
 import copy
 import glob
 import os
+import tqdm
 from typing import Dict, List, Union
 
 import numpy as np
@@ -685,22 +686,23 @@ def compute_plane_dhws_given_cam_pose_spatial_range(
     horizontal_mid_angle = (cam_horizontal_min + cam_horizontal_max) / 2
     vertical_mid_angle = (cam_vertical_min + cam_vertical_max) / 2
 
-    # we choose four courners and middle points of four edges
-    cam_heuristic_angles = [
-        (cam_horizontal_min, cam_vertical_min),
-        (cam_horizontal_min, cam_vertical_max),
-        (cam_horizontal_max, cam_vertical_min),
-        (cam_horizontal_max, cam_vertical_max),
-        (horizontal_mid_angle, cam_vertical_min),
-        (horizontal_mid_angle, cam_vertical_max),
-        (cam_horizontal_min, vertical_mid_angle),
-        (cam_horizontal_max, vertical_mid_angle),
-        (horizontal_mid_angle, vertical_mid_angle),
-    ]
+    cam_heuristic_angles = []
+    _N = 100
+    horizontal_angle_list = np.linspace(cam_horizontal_min, cam_horizontal_max, _N)
+    vertical_angle_list = np.linspace(cam_vertical_min, cam_vertical_max, _N)
+    for tmp_h in horizontal_angle_list:
+        for tmp_v in vertical_angle_list:
+            cam_heuristic_angles.append((tmp_h, tmp_v))
+
+    # NOTE: we need this to compute the base_spatial_size
+    cam_heuristic_angles.append((horizontal_mid_angle, vertical_mid_angle))
+
+    # print("\ncam_heuristic_angles: ", cam_heuristic_angles, "\n")
+    print("\n", sphere_center, sphere_r, cam_pose_n_truncated_stds, "\n")
 
     plane_bound_val = {"min_x": [], "max_x": [], "min_y": [], "max_y": []}
 
-    for i in range(len(cam_heuristic_angles)):
+    for i in tqdm.tqdm(range(len(cam_heuristic_angles))):
         # we set std to 0 so that we just choose angle to be the mean
         cur_c2w_mats, _, _ = gen_sphere_path(
             n_cams=1,
@@ -721,7 +723,7 @@ def compute_plane_dhws_given_cam_pose_spatial_range(
 
         # NOTE: we assume depths are stored from front to back
         cur_bound_val = compute_intersection_between_cam_frustum_and_plane(cam_pos, ray_dir, plane_zs[-1])
-        print("\n", cam_heuristic_angles[i], cur_bound_val, "\n")
+        # print("\n", cam_heuristic_angles[i], cur_bound_val, "\n")
         for k in plane_bound_val:
             plane_bound_val[k].append(cur_bound_val[k])
 
@@ -747,6 +749,14 @@ def compute_plane_dhws_given_cam_pose_spatial_range(
     plane_bound_val["max_y"] = np.max(plane_bound_val["max_y"])
 
     print("\nplane_bound_val: ", plane_bound_val, "\n")
+
+    # NOTE: 5.0 is a heuristic value, indicating the plane is too large.
+    plane_bound_max_val = np.max(np.abs(list(plane_bound_val.values())))
+    assert plane_bound_max_val <= 5.0, (
+        f"You have MPI's plane whose boundary value is up to {plane_bound_max_val}. "
+        f"This usually means the camera poses's range is too big, which will cause problems for MPI representation. "
+        f"Please reduce h_stddev or v_stddev in curriculums.py or cam_pose_n_truncated_stds in config file."
+    )
 
     # for simplicity, we enforce plane to be symmetric
     # Meanhile, we have +X right, +Y down.
@@ -811,25 +821,23 @@ def compute_plane_dhws_given_cam_pose_spatial_range_confined(
     horizontal_mid_angle = (cam_horizontal_min + cam_horizontal_max) / 2
     vertical_mid_angle = (cam_vertical_min + cam_vertical_max) / 2
 
-    # we choose four courners and middle points of four edges
-    cam_heuristic_angles = [
-        (cam_horizontal_min, cam_vertical_min),
-        (cam_horizontal_min, cam_vertical_max),
-        (cam_horizontal_max, cam_vertical_min),
-        (cam_horizontal_max, cam_vertical_max),
-        (horizontal_mid_angle, cam_vertical_min),
-        (horizontal_mid_angle, cam_vertical_max),
-        (cam_horizontal_min, vertical_mid_angle),
-        (cam_horizontal_max, vertical_mid_angle),
-        (horizontal_mid_angle, vertical_mid_angle),
-    ]
+    cam_heuristic_angles = []
+    _N = 100
+    horizontal_angle_list = np.linspace(cam_horizontal_min, cam_horizontal_max, _N)
+    vertical_angle_list = np.linspace(cam_vertical_min, cam_vertical_max, _N)
+    for tmp_h in horizontal_angle_list:
+        for tmp_v in vertical_angle_list:
+            cam_heuristic_angles.append((tmp_h, tmp_v))
 
-    print("\ncam_heuristic_angles: ", cam_heuristic_angles, "\n")
+    # NOTE: we need this to compute the base_spatial_size
+    cam_heuristic_angles.append((horizontal_mid_angle, vertical_mid_angle))
+
+    # print("\ncam_heuristic_angles: ", cam_heuristic_angles, "\n")
     print("\n", sphere_center, sphere_r, cam_pose_n_truncated_stds, "\n")
 
     plane_bound_val = {"min_x": [], "max_x": [], "min_y": [], "max_y": []}
 
-    for i in range(len(cam_heuristic_angles)):
+    for i in tqdm.tqdm(range(len(cam_heuristic_angles))):
         # we set std to 0 so that we just choose angle to be the mean
         cur_c2w_mats, _, _ = gen_sphere_path(
             n_cams=1,
@@ -850,7 +858,7 @@ def compute_plane_dhws_given_cam_pose_spatial_range_confined(
 
         # NOTE: we assume depths are stored from front to back
         cur_bound_val = compute_intersection_between_cam_frustum_and_plane(cam_pos, ray_dir, plane_zs[-1])
-        print("\n", cam_heuristic_angles[i], cur_bound_val, "\n")
+        # print("\n", cam_heuristic_angles[i], cam_pos[:, 2:], cur_bound_val, "\n")
         for k in plane_bound_val:
             plane_bound_val[k].append(cur_bound_val[k])
 
@@ -876,6 +884,14 @@ def compute_plane_dhws_given_cam_pose_spatial_range_confined(
     plane_bound_val["max_y"] = np.max(plane_bound_val["max_y"])
 
     print("\nplane_bound_val: ", plane_bound_val, "\n")
+
+    # NOTE: 5.0 is a heuristic value, indicating the plane is too large.
+    plane_bound_max_val = np.max(np.abs(list(plane_bound_val.values())))
+    assert plane_bound_max_val <= 5.0, (
+        f"You have MPI's plane whose boundary value is up to {plane_bound_max_val}. "
+        f"This usually means the camera poses's range is too big, which will cause problems for MPI representation. "
+        f"Please reduce h_stddev or v_stddev in curriculums.py or cam_pose_n_truncated_stds in config file."
+    )
 
     # for simplicity, we enforce plane to be symmetric
     # Meanhile, we have +X right, +Y down.
