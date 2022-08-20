@@ -411,7 +411,7 @@ def train(rank, world_size, config, master_port, run_dataset):
 
             if discriminator.step > opt.total_iters:
                 break
-            
+
             if rank == 0:
                 total_progress_bar.update(1)
 
