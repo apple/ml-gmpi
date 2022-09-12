@@ -115,7 +115,7 @@ def homography(
                 print("\nv: ", v[0, :4, 0], "\n")
 
                 if c2w_mat is not None:
-                    yaws, pitches = compute_pitch_yaw_from_w2c_mat(c2w_mat.cpu(), torch.FloatTensor(sphere_c))
+                    yaws, pitches = compute_pitch_yaw_from_w2c_mat(torch.inverse(c2w_mat).cpu(), torch.FloatTensor(sphere_c))
                     print("\nyaws: ", yaws.cpu().numpy().tolist(), "\n")
                     print("\npitches: ", pitches.cpu().numpy().tolist(), "\n")
 
