@@ -20,6 +20,8 @@ dependencies:
   - torchvision=0.10.1
   - torchaudio==0.9.1
   - cudatoolkit=10.2
+  - imageio=2.9.0
+  - imageio-ffmpeg=0.4.3
   - tensorboard
   - pip
   - pip:
@@ -28,7 +30,6 @@ dependencies:
     - yacs
     - scikit-image
     - scikit-video
-    - imageio
     - opencv-python
     - black
     - trimesh
@@ -43,6 +44,5 @@ dependencies:
     - click
     - psutil
     - lazy
-    - imageio-ffmpeg==0.4.3
     - pyspng==0.1.0
     - PyMCubes
