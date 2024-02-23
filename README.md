@@ -39,7 +39,7 @@ cd /path/to/this/repo
 export GMPI_ROOT=$PWD
 ```
 
-Please download our [pretrained checkpoints](https://drive.google.com/drive/folders/1MEIjen0XOIW-kxEMfBUONnKYrkRATSR_?usp=sharing) and place them under `${GMPI_ROOT}/ckpts`. The structure should be:
+Please download our pretrained checkpoints from [the release page](https://github.com/apple/ml-gmpi/releases) or [this link](https://drive.google.com/drive/folders/1MEIjen0XOIW-kxEMfBUONnKYrkRATSR_?usp=sharing) and place them under `${GMPI_ROOT}/ckpts`. The structure should be:
 ```
 .
 +-- ckpts
