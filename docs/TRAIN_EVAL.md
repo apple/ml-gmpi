@@ -121,7 +121,7 @@ mv ${GMPI_ROOT}/runtime_dataset/metfaces_detect/detections/fail_list.txt ${GMPI_
 
 ### Processed Data
 
-We provide processed poses for FFHQ and Metfaces in [this link](https://drive.google.com/drive/folders/1JDDtGXZP0Z8OwRROO5VNxOjQgwpUSJDj?usp=sharing).
+We provide processed poses for FFHQ and Metfaces in [the release page](https://github.com/apple/ml-gmpi/releases) and [this link](https://drive.google.com/drive/folders/1JDDtGXZP0Z8OwRROO5VNxOjQgwpUSJDj?usp=sharing).
 
 ### Final Folder Structure
 
