@@ -139,7 +139,7 @@ Please refer to [TRAIN_EVAL.md](./docs/TRAIN_EVAL.md) for more details.
 @inproceedings{zhao-gmpi2022,
   title = {Generative Multiplane Images: Making a 2D GAN 3D-Aware},
   author = {Xiaoming Zhao and Fangchang Ma and David Güera and Zhile Ren and Alexander G. Schwing and Alex Colburn},
-  booktitle = {Proc. ECCV},
+  booktitle = {ECCV},
   year = {2022},
 }
 ```
