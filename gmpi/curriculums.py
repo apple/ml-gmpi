@@ -77,8 +77,7 @@ def extract_metadata(curriculum, current_step):
     return_dict = {}
     for curriculum_step in sorted([cs for cs in curriculum.keys() if type(cs) == int], reverse=True):
         if curriculum_step <= current_step:
-            for key, value in curriculum[curriculum_step].items():
-                return_dict[key] = value
+            return_dict.update(curriculum[curriculum_step])
             break
     for key in [k for k in curriculum.keys() if type(k) != int]:
         return_dict[key] = curriculum[key]
